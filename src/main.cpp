@@ -3,6 +3,7 @@
 #include "TM1638Box.h"
 #include "KeypadBox.h"
 #include "KeyBox.h"
+#include "connection.h"
 
 #define RXD2 16
 #define TXD2 17
@@ -34,10 +35,14 @@ int blue=0;
 
 KeypadBox* keypad;
 KeyBox* keybox;
+Connection* connection;
 
 void setup() {
     Serial.begin(115200);
     Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
+
+    connection = new Connection();
+    connection->begin();
 
     #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
         clock_prescale_set(clock_div_1);
@@ -55,6 +60,8 @@ void setup() {
 }
 
 void loop() {
+    connection->handle();
+    
     tm1638.update();
     keypad->handle();
     
