@@ -6,11 +6,11 @@
 #include <Adafruit_GFX.h> 
 #include <TM16xxDisplay.h>
 #include <TM16xxButtons.h>
-
+#include "connection.h"
 
 class TM1638Box {
 public:
-    TM1638Box(uint8_t dio_pin, uint8_t clk_pin, uint8_t stb_pin);
+    TM1638Box(uint8_t dio_pin, uint8_t clk_pin, uint8_t stb_pin, Connection* conn);
     void begin();
     void update();
     void startCountdown(int hours, int minutes, int seconds);
@@ -23,6 +23,7 @@ private:
     TM1638* module;
     TM16xxButtons* buttons;
     TM16xxDisplay* display;
+    Connection* connection;
     
     unsigned long countdownTarget = 0;
     bool countdownRunning = false;

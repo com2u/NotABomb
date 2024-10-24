@@ -1,11 +1,12 @@
 #include "KeypadBox.h"
 
-KeypadBox::KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& b)
+KeypadBox::KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& b, Connection* conn)
     : tm1638(tm), 
       pixels(px), 
       red(r), 
       green(g), 
       blue(b),
+      connection(conn),
       customKeypad(makeKeymap((char*)hexaKeys), rowPins, colPins, ROWS, COLS) {
     
     // Initialize the keypad matrix
@@ -40,22 +41,47 @@ void KeypadBox::handle() {
             case '1': 
                 tm1638.setLEDs(1);
                 pixels.setPixelColor(1, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Key1", "1");
+                    connection->getMQTTClient()->flush();
+                    Serial.println("Key1 send via MQTT");
+                }
                 break;
             case '2':
                 tm1638.setLEDs(2);
                 pixels.setPixelColor(2, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Key2", "1");
+                    connection->getMQTTClient()->flush();
+                    Serial.println("Key2 send via MQTT");
+                }
                 break;
             case '3':
                 tm1638.setLEDs(4);
                 pixels.setPixelColor(3, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Key3", "1");
+                    connection->getMQTTClient()->flush();
+                    Serial.println("Key3 send via MQTT");
+                }
                 break;
             case '4':
                 tm1638.setLEDs(8);
                 pixels.setPixelColor(4, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Key4", "1");
+                    connection->getMQTTClient()->flush();
+                    Serial.println("Key4 send via MQTT");
+                }
                 break;
             case '5':
                 tm1638.setLEDs(16);
                 pixels.setPixelColor(5, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Key5", "1");
+                    connection->getMQTTClient()->flush();
+                    Serial.println("Key5 send via MQTT");
+                }
                 break;
             case '6':
                 tm1638.setLEDs(32);

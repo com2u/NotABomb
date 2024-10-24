@@ -13,8 +13,6 @@ HardwareSerial Serial2(2);
 #define PIN_CLK 3
 #define PIN_DIO 4
 
-TM1638Box tm1638(PIN_DIO, PIN_CLK, PIN_STB);
-
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
@@ -33,6 +31,7 @@ int red=0;
 int green=0;
 int blue=0;
 
+TM1638Box tm1638(PIN_DIO, PIN_CLK, PIN_STB, nullptr);  // Initialize with nullptr, will set connection later
 KeypadBox* keypad;
 KeyBox* keybox;
 Connection* connection;
@@ -41,18 +40,19 @@ void setup() {
     Serial.begin(115200);
     Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
 
-    connection = new Connection();
+    pixels.begin();
+    
+    connection = new Connection(pixels);
     connection->begin();
 
     #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
         clock_prescale_set(clock_div_1);
     #endif
 
-    pixels.begin();
     tm1638.begin();
     tm1638.startCountdown(1, 0, 0);
 
-    keypad = new KeypadBox(tm1638, pixels, red, green, blue);
+    keypad = new KeypadBox(tm1638, pixels, red, green, blue, connection);
     keybox = new KeyBox();
     keybox->init();
 

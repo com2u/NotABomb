@@ -2,7 +2,8 @@
 
 TM1638Box* TM1638Box::instance = nullptr;
 
-TM1638Box::TM1638Box(uint8_t dio_pin, uint8_t clk_pin, uint8_t stb_pin) {
+TM1638Box::TM1638Box(uint8_t dio_pin, uint8_t clk_pin, uint8_t stb_pin, Connection* conn) 
+    : connection(conn) {
     module = new TM1638(dio_pin, clk_pin, stb_pin);
     buttons = new TM16xxButtons(module);
     display = new TM16xxDisplay(module, 8);
@@ -98,6 +99,11 @@ void TM1638Box::fnClick(byte nButton) {
         Serial.print(nButton);
         Serial.println(F(" click."));
         instance->display->println(F("sclk  "));
+
+        // Send MQTT message on button click
+        if (instance->connection && instance->connection->getMQTTClient()) {
+            instance->connection->getMQTTClient()->publish("NotABomb/Key/ButtonClick", "1");
+        }
 
         switch (nButton) {
             case 16: instance->module->setLEDs(1); break;

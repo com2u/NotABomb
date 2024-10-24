@@ -3,10 +3,11 @@
 
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <Adafruit_NeoPixel.h>
 
 class Connection {
     public:
-        Connection();
+        Connection(Adafruit_NeoPixel& px);
         void begin();
         void handle();
         PubSubClient* getMQTTClient();
@@ -21,10 +22,13 @@ class Connection {
 
         WiFiClient espClient;
         PubSubClient client;
+        Adafruit_NeoPixel& pixels;
         
         void setupWiFi();
         void reconnectMQTT();
-        static void callback(char* topic, byte* payload, unsigned int length);
+        void callback(char* topic, byte* payload, unsigned int length);
+        static void staticCallback(char* topic, byte* payload, unsigned int length);
+        static Connection* instance;
 };
 
 #endif

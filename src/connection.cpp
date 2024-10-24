@@ -1,13 +1,18 @@
 #include "connection.h"
 #include <Arduino.h>
 
-Connection::Connection() : client(espClient) {
+Connection* Connection::instance = nullptr;
+
+Connection::Connection(Adafruit_NeoPixel& px) 
+    : client(espClient), 
+      pixels(px) {
+    instance = this;
 }
 
 void Connection::begin() {
     setupWiFi();
     client.setServer(mqtt_server, mqtt_port);
-    client.setCallback(callback);
+    client.setCallback(staticCallback);
     
     if (!client.connected()) {
         reconnectMQTT();
@@ -34,7 +39,7 @@ void Connection::reconnectMQTT() {
     while (!client.connected()) {
         Serial.print("Attempting MQTT connection...");
         // Create a random client ID
-        String clientId = "ESP32Client-";
+        String clientId = "NotABomb-";
         clientId += String(random(0xffff), HEX);
         
         // Attempt to connect
@@ -43,7 +48,7 @@ void Connection::reconnectMQTT() {
             // Once connected, publish an announcement...
             client.publish("NotABomb/Key/init", "Startup");
             // ... and subscribe to topics
-            client.subscribe("notabomb/control");
+            client.subscribe("NotABomb/Key/#");
             client.subscribe("NotABomb/CYD/#");
             Serial.println("Subscribed to NotABomb/CYD/#");
         } else {
@@ -52,6 +57,12 @@ void Connection::reconnectMQTT() {
             Serial.println(" try again in 5 seconds");
             delay(5000);
         }
+    }
+}
+
+void Connection::staticCallback(char* topic, byte* payload, unsigned int length) {
+    if (instance) {
+        instance->callback(topic, payload, length);
     }
 }
 
@@ -64,6 +75,10 @@ void Connection::callback(char* topic, byte* payload, unsigned int length) {
         Serial.print((char)payload[i]);
     }
     Serial.println();
+
+    // Set LED color when message received
+    pixels.setPixelColor(1, pixels.Color(255, 0, 0));
+    pixels.show();
 }
 
 void Connection::handle() {

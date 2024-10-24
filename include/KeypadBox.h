@@ -5,6 +5,7 @@
 #include <Keypad.h>
 #include <Adafruit_NeoPixel.h>
 #include "TM1638Box.h"
+#include "connection.h"
 
 class KeypadBox {
 private:
@@ -19,9 +20,10 @@ private:
     int& red;
     int& green;
     int& blue;
+    Connection* connection;
 
 public:
-    KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& b);
+    KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& b, Connection* conn);
     void handle();
 };
 
