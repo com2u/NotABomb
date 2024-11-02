@@ -2,6 +2,7 @@
 #define KEYBOX_H
 
 #include <Arduino.h>
+#include "connection.h"
 
 class KeyBox {
 private:
@@ -29,9 +30,10 @@ private:
     uint8_t black_switch2;
 
     void activateRC_PoliceLight();
+    Connection* connection;
 
 public:
-    KeyBox();
+    KeyBox(Connection* conn);
     void init();
     void handle();
 };

@@ -42,7 +42,7 @@ void KeypadBox::handle() {
                 tm1638.setLEDs(1);
                 pixels.setPixelColor(1, pixels.Color(red, green, blue));
                 if (connection && connection->getMQTTClient()) {
-                    connection->getMQTTClient()->publish("NotABomb/Key/Key1", "1");
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "1");
                     connection->getMQTTClient()->flush();
                     Serial.println("Key1 send via MQTT");
                 }
@@ -51,7 +51,7 @@ void KeypadBox::handle() {
                 tm1638.setLEDs(2);
                 pixels.setPixelColor(2, pixels.Color(red, green, blue));
                 if (connection && connection->getMQTTClient()) {
-                    connection->getMQTTClient()->publish("NotABomb/Key/Key2", "1");
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "2");
                     connection->getMQTTClient()->flush();
                     Serial.println("Key2 send via MQTT");
                 }
@@ -60,7 +60,7 @@ void KeypadBox::handle() {
                 tm1638.setLEDs(4);
                 pixels.setPixelColor(3, pixels.Color(red, green, blue));
                 if (connection && connection->getMQTTClient()) {
-                    connection->getMQTTClient()->publish("NotABomb/Key/Key3", "1");
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "3");
                     connection->getMQTTClient()->flush();
                     Serial.println("Key3 send via MQTT");
                 }
@@ -69,7 +69,7 @@ void KeypadBox::handle() {
                 tm1638.setLEDs(8);
                 pixels.setPixelColor(4, pixels.Color(red, green, blue));
                 if (connection && connection->getMQTTClient()) {
-                    connection->getMQTTClient()->publish("NotABomb/Key/Key4", "1");
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "4");
                     connection->getMQTTClient()->flush();
                     Serial.println("Key4 send via MQTT");
                 }
@@ -78,7 +78,7 @@ void KeypadBox::handle() {
                 tm1638.setLEDs(16);
                 pixels.setPixelColor(5, pixels.Color(red, green, blue));
                 if (connection && connection->getMQTTClient()) {
-                    connection->getMQTTClient()->publish("NotABomb/Key/Key5", "1");
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "5");
                     connection->getMQTTClient()->flush();
                     Serial.println("Key5 send via MQTT");
                 }
@@ -86,37 +86,87 @@ void KeypadBox::handle() {
             case '6':
                 tm1638.setLEDs(32);
                 pixels.setPixelColor(6, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "6");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case '7':
                 tm1638.setLEDs(64);
                 pixels.setPixelColor(7, pixels.Color(red, green, blue));
+                                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "7");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case '8':
                 tm1638.setLEDs(128);
                 pixels.setPixelColor(8, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "8");
+                    connection->getMQTTClient()->flush();
+                }
+                break;
+            case '9':
+                pixels.setPixelColor(9, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "9");
+                    connection->getMQTTClient()->flush();
+                }
+                break;
+            case '0':
+                pixels.setPixelColor(0, pixels.Color(red, green, blue));
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "9");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case 'A':
                 red=128; green=0; blue=0;
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "A");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case 'B':
                 red=0; green=128; blue=0;
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "B");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case 'C':
                 red=0; green=0; blue=128;
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "C");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case 'D':
                 red=128; green=128; blue=0;
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "D");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case '.':
                 red=0; green=0; blue=0;
                 for(int i=0; i<16; i++) {
                     pixels.setPixelColor(i, pixels.Color(red, green, blue));
                 }
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "*");
+                    connection->getMQTTClient()->flush();
+                }
                 break;
             case '#':
                 red=128; green=128; blue=128;
                 for(int i=0; i<16; i++) {
                     pixels.setPixelColor(i, pixels.Color(red, green, blue));
+                }
+                if (connection && connection->getMQTTClient()) {
+                    connection->getMQTTClient()->publish("NotABomb/Key/Keypad", "#");
+                    connection->getMQTTClient()->flush();
                 }
                 break;
         }

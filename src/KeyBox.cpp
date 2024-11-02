@@ -1,7 +1,7 @@
 #include "KeyBox.h"
 
-KeyBox::KeyBox() 
-    : RC_POLICE_LIGHT_PIN(40),
+KeyBox::KeyBox(Connection* conn):connection(conn),
+      RC_POLICE_LIGHT_PIN(40),
       Key_Green_PIN(39),
       Key_Red_PIN(38),
       Key_White1_PIN(37),
@@ -59,6 +59,11 @@ void KeyBox::handle() {
     if(Key_Red != digitalRead(Key_Red_PIN)){
         Key_Red = digitalRead(Key_Red_PIN);
         Serial.println((String) "Key_Red:"+Key_Red); 
+        if (connection && connection->getMQTTClient()) {
+            connection->getMQTTClient()->publish("NotABomb/Key/Command", "EXIT");
+            connection->getMQTTClient()->flush();
+            Serial.println("Send Exit to Quizz");
+        }
     }
     if(Key_White1 != digitalRead(Key_White1_PIN)){
         Key_White1 = digitalRead(Key_White1_PIN);
@@ -92,4 +97,12 @@ void KeyBox::handle() {
         black_switch2 = digitalRead(black_switch2_PIN);
         Serial.println((String) "black_switch2:"+black_switch2); 
     }
+    if ((Key_Green == 0) && (Key_Red == 0) && (Key_White1 == 0) && (Key_White2 == 0)){       
+        if (connection && connection->getMQTTClient()) {
+            connection->getMQTTClient()->publish("NotABomb/Key/Command", "RESTART");
+            connection->getMQTTClient()->flush();
+            Serial.println("Send Restart to Display");
+        }
+    }
+    
 }

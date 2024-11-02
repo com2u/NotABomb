@@ -3,9 +3,10 @@
 
 Connection* Connection::instance = nullptr;
 
-Connection::Connection(Adafruit_NeoPixel& px) 
+Connection::Connection(Adafruit_NeoPixel& px, LEDMatrix& matrix) 
     : client(espClient), 
-      pixels(px) {
+      pixels(px),
+      ledMatrix(matrix) {
     instance = this;
 }
 
@@ -22,10 +23,11 @@ void Connection::begin() {
 void Connection::setupWiFi() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
-    Serial.print("Connecting to WiFi");
+    Serial.print((String) "Connecting to WiFi "+ssid);
     
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
+        ledMatrix.handle(); // This will call updateStartupAnimation
+        delay(50); // Reduced delay to allow more frequent animation updates
         Serial.print(".");
     }
     
