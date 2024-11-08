@@ -25,6 +25,8 @@ public:
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     void binaryLEDText(String text);
     bool isStartupComplete() const { return startupComplete; }
+    bool isColorChainActive() const { return startupComplete && (remainingColorPixels > 0 || remainingDarkPixels > 0); }
+    bool checkLEDChain(uint8_t r_ref, uint8_t g_ref, uint8_t b_ref);
     Adafruit_NeoPixel& getPixels() { return pixels; }
     int& getRed() { return red; }
     int& getGreen() { return green; }

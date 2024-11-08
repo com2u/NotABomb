@@ -28,6 +28,7 @@ private:
     uint8_t toggle_switch1;
     uint8_t black_switch1;
     uint8_t black_switch2;
+    uint8_t motor;
 
     void activateRC_PoliceLight();
     Connection* connection;

@@ -21,7 +21,8 @@ KeyBox::KeyBox(Connection* conn):connection(conn),
       toggle_switch2(true),
       toggle_switch1(true),
       black_switch1(true),
-      black_switch2(true) {
+      black_switch2(true),
+      motor(14) {
 }
 
 void KeyBox::activateRC_PoliceLight() {
@@ -48,6 +49,8 @@ void KeyBox::init() {
     pinMode(toggle_switch1_PIN, INPUT_PULLUP);
     pinMode(black_switch1_PIN, INPUT_PULLUP);
     pinMode(black_switch2_PIN, INPUT_PULLUP);
+    pinMode(black_switch2_PIN, INPUT_PULLUP);
+    pinMode(motor, OUTPUT);  
 }
 
 void KeyBox::handle() {
@@ -59,15 +62,29 @@ void KeyBox::handle() {
     if(Key_Red != digitalRead(Key_Red_PIN)){
         Key_Red = digitalRead(Key_Red_PIN);
         Serial.println((String) "Key_Red:"+Key_Red); 
-        if (connection && connection->getMQTTClient()) {
-            connection->getMQTTClient()->publish("NotABomb/Key/Command", "EXIT");
-            connection->getMQTTClient()->flush();
-            Serial.println("Send Exit to Quizz");
+        if (Key_Red == 0) {
+            if (connection && connection->getMQTTClient()) {
+                connection->getMQTTClient()->publish("NotABomb/Key/Command", "EXIT");
+                connection->getMQTTClient()->flush();
+                Serial.println("Send Exit to Quizz");
+            }
         }
     }
     if(Key_White1 != digitalRead(Key_White1_PIN)){
         Key_White1 = digitalRead(Key_White1_PIN);
         Serial.println((String) "Key_White1:"+Key_White1); 
+        // Only check for blue pixels when Key_White1 is pressed and color chain is active
+        if (Key_White1 == 0 && connection && connection->getMQTTClient() && 
+            connection->getLEDMatrix().isColorChainActive()) {
+            
+            // Send appropriate MQTT message
+            if (connection->getLEDMatrix().checkLEDChain(0, 0, 32)) {
+                connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Passed");
+            } else {
+                connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Failed");
+            }
+            connection->getMQTTClient()->flush();
+        }
     }
     if(Key_White2 != digitalRead(Key_White2_PIN)){
         Key_White2 = digitalRead(Key_White2_PIN);
@@ -97,6 +114,7 @@ void KeyBox::handle() {
         black_switch2 = digitalRead(black_switch2_PIN);
         Serial.println((String) "black_switch2:"+black_switch2); 
     }
+    // Reset display when all keys are pressed
     if ((Key_Green == 0) && (Key_Red == 0) && (Key_White1 == 0) && (Key_White2 == 0)){       
         if (connection && connection->getMQTTClient()) {
             connection->getMQTTClient()->publish("NotABomb/Key/Command", "RESTART");

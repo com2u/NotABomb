@@ -37,6 +37,23 @@ void LEDMatrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
     blue = b;
 }
 
+bool LEDMatrix::checkLEDChain(uint8_t r_ref, uint8_t g_ref, uint8_t b_ref) {
+    
+            // Check all pixels in the matrix for blue color
+    for(int i = 0; i < 64; i++) {
+        uint32_t color = pixels.getPixelColor(i);
+        uint8_t r = (color >> 16) & 0xFF;
+        uint8_t g = (color >> 8) & 0xFF;
+        uint8_t b = color & 0xFF;
+        Serial.print((String) "#"+i+ "rgb"+r+","+g+","+b);
+        // Check if pixel is blue (0,0,255)
+        if (r > r_ref && g > g_ref && b >= b_ref) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void LEDMatrix::updatePixelFromChain(int index) {
     if (chain[index].active) {
         pixels.setPixelColor(index, pixels.Color(
