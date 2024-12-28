@@ -51,13 +51,19 @@ void KeyBox::init() {
     pinMode(black_switch2_PIN, INPUT_PULLUP);
     pinMode(black_switch2_PIN, INPUT_PULLUP);
     pinMode(motor, OUTPUT);  
+    digitalWrite(motor, HIGH); // Switch Off Motor
+
 }
 
 void KeyBox::handle() {
     if(Key_Green != digitalRead(Key_Green_PIN)){
         Key_Green = digitalRead(Key_Green_PIN);
+        digitalWrite(motor, LOW); // Switch On Motor
         Serial.println((String) "Key_Green:"+Key_Green); 
         activateRC_PoliceLight();
+        delay(5000);
+        digitalWrite(motor, HIGH); // Switch Off Motor
+        
     }
     if(Key_Red != digitalRead(Key_Red_PIN)){
         Key_Red = digitalRead(Key_Red_PIN);

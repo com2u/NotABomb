@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 // Define the WiFi networks
-const char* ssid[] =     { "Com2u.de.WLAN2","Com2u.de.WLAN","Com2uRedmi11","KPMS-Openhouse", "Vodafone-BE2C",  "RobsTest","HessCom2u", "HHLink","muccc.legacy-2.4GHz", "muenchen.freifunk.net",  "Cafeteria","Free_WIFI","WLANESP","muenchen.freifunk.net/muc_cty" ,"KPMS-Openhouse","KPMS-Cafeteria"};
-const char* password[] = { "SOMMERREGEN05","SOMMERREGEN05", "SOMMERREGEN05", "OpenHouse", "q49adKnc4bPka7bp", "Schiller12","SOMMERREGEN05",  "SOMMERREGEN05","haileris"  , ""               ,  "Cafeteria","",       "Schiller", "","OpenHouse", "KPMS-Cafeteria-2022"};
+const char* ssid[] =     { "38C3-open", "Com2u.de.WLAN2","Com2u.de.WLAN","Com2uRedmi11","KPMS-Openhouse", "Vodafone-BE2C",  "RobsTest","HessCom2u", "HHLink","muccc.legacy-2.4GHz", "muenchen.freifunk.net",  "Cafeteria","Free_WIFI","WLANESP","muenchen.freifunk.net/muc_cty" ,"KPMS-Openhouse","KPMS-Cafeteria"};
+const char* password[] = { "", "SOMMERREGEN05","SOMMERREGEN05", "SOMMERREGEN05", "OpenHouse", "q49adKnc4bPka7bp", "Schiller12","SOMMERREGEN05",  "SOMMERREGEN05","haileris"  , ""               ,  "Cafeteria","",       "Schiller", "","OpenHouse", "KPMS-Cafeteria-2022"};
 
 Connection* Connection::instance = nullptr;
 
