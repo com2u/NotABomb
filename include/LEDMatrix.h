@@ -15,6 +15,12 @@ struct ChainPixel {
     bool active;
 };
 
+enum class MatrixMode {
+    STARTUP,
+    COLOR_CHAIN,
+    SIMON_SAYS
+};
+
 class LEDMatrix {
 public:
     LEDMatrix(uint8_t pin = 13, uint16_t numPixels = 64);
@@ -31,12 +37,16 @@ public:
     int& getRed() { return red; }
     int& getGreen() { return green; }
     int& getBlue() { return blue; }
+    void setMode(MatrixMode newMode);
+    String getMode() const;
+    void initSimonSays();
 
 private:
     static const int DELAYVAL = 500;
     static const int NUM_PIXELS = 64;
     
     Adafruit_NeoPixel pixels;
+    MatrixMode currentMode = MatrixMode::STARTUP;
     
     // Color variables for external use (KeypadBox)
     int red = 0;
@@ -58,6 +68,9 @@ private:
     ChainPixel chain[NUM_PIXELS];
     Color currentChainColor;
 
+    // Simon Says state
+    Color quadrantColors[4];
+
     // Private methods
     int getPixelIndex(int x, int y);
     void updateStartupAnimation();
@@ -65,6 +78,9 @@ private:
     void moveChainForward();
     void updateColorChain();
     void updatePixelFromChain(int index);
+    void displaySimonSaysPattern();
+    void generateRandomQuadrantColors();
+    void setQuadrantColor(int quadrant, const Color& color);
 };
 
 #endif

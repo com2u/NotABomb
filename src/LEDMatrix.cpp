@@ -10,14 +10,109 @@ LEDMatrix::LEDMatrix(uint8_t pin, uint16_t numPixels)
     currentChainColor = {0, 0, 0};
 }
 
+String LEDMatrix::getMode() const {
+    switch (currentMode) {
+        case MatrixMode::COLOR_CHAIN:
+            return "ColorChain";
+        case MatrixMode::SIMON_SAYS:
+            return "SimonSays";
+        case MatrixMode::STARTUP:
+            return "Startup";
+        default:
+            return "Unknown";
+    }
+}
+
 void LEDMatrix::begin() {
     pixels.begin();
     clear();
 }
 
 void LEDMatrix::handle() {
-    updateStartupAnimation();
-    updateColorChain();
+    switch (currentMode) {
+        case MatrixMode::STARTUP:
+            updateStartupAnimation();
+            break;
+        case MatrixMode::COLOR_CHAIN:
+            if (startupComplete) {
+                updateColorChain();
+            }
+            break;
+        case MatrixMode::SIMON_SAYS:
+            // Simon Says mode just displays the pattern, no animation updates needed
+            break;
+    }
+}
+
+void LEDMatrix::setMode(MatrixMode newMode) {
+    if (newMode == currentMode) return;
+    
+    currentMode = newMode;
+    clear(); // Clear display when changing modes
+    
+    if (newMode == MatrixMode::SIMON_SAYS) {
+        Serial.println((String) "LEDMatrix::setMode initSimonSays"); 
+        initSimonSays();
+    } else if (newMode == MatrixMode::COLOR_CHAIN) {
+        Serial.println((String) "LEDMatrix::setMode ColorChain"); 
+        updateColorChain();
+    }
+    
+    
+}
+
+void LEDMatrix::initSimonSays() {
+    generateRandomQuadrantColors();
+    displaySimonSaysPattern();
+}
+
+void LEDMatrix::generateRandomQuadrantColors() {
+    // Define the four possible colors
+    const Color colors[] = {
+        {255, 0, 0},    // Red
+        {0, 255, 0},    // Green
+        {255, 255, 0},  // Yellow
+        {0, 0, 255}     // Blue
+    };
+    
+    // Create a temporary array to track used colors
+    bool usedColors[4] = {false, false, false, false};
+    int colorcode = 0;
+    // Assign random unique colors to each quadrant
+    for (int i = 0; i < 4; i++) {
+        int colorIndex;
+        do {
+            colorIndex = random(4);
+        } while (usedColors[colorIndex]);
+        Serial.println((String) "SinonSays Color:"+colorIndex); 
+        colorcode = colorcode * 2 + colorIndex;
+        Serial.println((String) "SinonSays code:"+colorcode); 
+        usedColors[colorIndex] = true;
+        quadrantColors[i] = colors[colorIndex];
+    }
+}
+
+void LEDMatrix::setQuadrantColor(int quadrant, const Color& color) {
+    int startX = (quadrant % 2) * 4;
+    int startY = (quadrant / 2) * 4;
+    
+    // Fill the 4x4 quadrant with the specified color
+    for (int y = startY; y < startY + 4; y++) {
+        for (int x = startX; x < startX + 4; x++) {
+            pixels.setPixelColor(getPixelIndex(x, y), pixels.Color(color.r, color.g, color.b));
+        }
+    }
+}
+
+void LEDMatrix::displaySimonSaysPattern() {
+    clear();
+    
+    // Set each quadrant's color
+    for (int i = 0; i < 4; i++) {
+        setQuadrantColor(i, quadrantColors[i]);
+    }
+    
+    show();
 }
 
 void LEDMatrix::clear() {
@@ -38,8 +133,7 @@ void LEDMatrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 bool LEDMatrix::checkLEDChain(uint8_t r_ref, uint8_t g_ref, uint8_t b_ref) {
-    
-            // Check all pixels in the matrix for blue color
+    // Check all pixels in the matrix for blue color
     for(int i = 0; i < 64; i++) {
         uint32_t color = pixels.getPixelColor(i);
         uint8_t r = (color >> 16) & 0xFF;
@@ -168,6 +262,7 @@ void LEDMatrix::updateStartupAnimation() {
         default: {
             startupComplete = true;
             clear();
+            currentMode = MatrixMode::COLOR_CHAIN;
             break;
         }
     }

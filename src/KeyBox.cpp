@@ -95,6 +95,12 @@ void KeyBox::handle() {
     if(Key_White2 != digitalRead(Key_White2_PIN)){
         Key_White2 = digitalRead(Key_White2_PIN);
         Serial.println((String) "Key_White2:"+Key_White2); 
+        if (connection->getLEDMatrix().getMode() == "ColorChain") {
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "SimonSays");
+        } else if (connection->getLEDMatrix().getMode() == "SimonSays") {
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "ColorChain");
+        }
+        delay(600); // debounce
     }
     if(toggle_switch4 != digitalRead(toggle_switch4_PIN)){
         toggle_switch4 = digitalRead(toggle_switch4_PIN);

@@ -62,7 +62,6 @@ boolean connectWIFI(const char* wifi_ssid, const char* password, int retries ){
   return false;
 }
 
-
 void scanWIFINetwork() {
   Serial.println((String) "WIFI scan start "+millis());
 
@@ -103,7 +102,6 @@ void scanWIFINetwork() {
   // Wait a bit before scanning again
   delay(500);
 }
-
 
 void Connection::setupWiFi() {
   //connect to WiFi
@@ -155,16 +153,30 @@ void Connection::staticCallback(char* topic, byte* payload, unsigned int length)
 }
 
 void Connection::callback(char* topic, byte* payload, unsigned int length) {
-    // Handle incoming messages here
     Serial.print("Message arrived [");
     Serial.print(topic);
     Serial.print("] ");
+    
+    // Create a string from the payload
+    String message;
     for (int i = 0; i < length; i++) {
+        message += (char)payload[i];
         Serial.print((char)payload[i]);
     }
     Serial.println();
 
-    // Set LED color when message received
+    // Check if this is a mode change message
+    if (String(topic) == "NotABomb/CYD/Mode") {
+        if (message == "SimonSays") {
+            ledMatrix.setMode(MatrixMode::SIMON_SAYS);
+            Serial.println("Switching to Simon Says mode");
+        } else if (message == "ColorChain") {
+            ledMatrix.setMode(MatrixMode::COLOR_CHAIN);
+            Serial.println("Switching to Color Chain mode");
+        }
+    }
+
+    // Set LED color when message received (keep existing functionality)
     pixels.setPixelColor(1, pixels.Color(255, 0, 0));
     pixels.show();
 }
