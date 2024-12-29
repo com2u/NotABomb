@@ -98,9 +98,9 @@ void KeyBox::handle() {
         if (connection->getLEDMatrix().getMode() == "ColorChain") {
             connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "SimonSays");
         } else if (connection->getLEDMatrix().getMode() == "SimonSays") {
-            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "ColorChain");
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "Maze");
         }
-        delay(600); // debounce
+        delay(60); // debounce
     }
     if(toggle_switch4 != digitalRead(toggle_switch4_PIN)){
         toggle_switch4 = digitalRead(toggle_switch4_PIN);

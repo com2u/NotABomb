@@ -16,6 +16,8 @@ String LEDMatrix::getMode() const {
             return "ColorChain";
         case MatrixMode::SIMON_SAYS:
             return "SimonSays";
+        case MatrixMode::MAZE:
+            return "Maze";
         case MatrixMode::STARTUP:
             return "Startup";
         default:
@@ -41,6 +43,9 @@ void LEDMatrix::handle() {
         case MatrixMode::SIMON_SAYS:
             // Simon Says mode just displays the pattern, no animation updates needed
             break;
+        case MatrixMode::MAZE:
+            updateMazeDisplay();
+            break;
     }
 }
 
@@ -56,9 +61,10 @@ void LEDMatrix::setMode(MatrixMode newMode) {
     } else if (newMode == MatrixMode::COLOR_CHAIN) {
         Serial.println((String) "LEDMatrix::setMode ColorChain"); 
         updateColorChain();
+    } else if (newMode == MatrixMode::MAZE) {
+        Serial.println((String) "LEDMatrix::setMode Maze"); 
+        initMaze();
     }
-    
-    
 }
 
 void LEDMatrix::initSimonSays() {
@@ -372,4 +378,90 @@ void LEDMatrix::binaryLEDText(String text) {
     }
     
     pixels.show();
+}
+
+// New Maze mode methods
+void LEDMatrix::initMaze() {
+    generateMazePoints();
+    updateMazeDisplay();
+}
+
+void LEDMatrix::generateMazePoints() {
+    // Generate random start position
+    playerPos.x = random(MATRIX_SIZE);
+    playerPos.y = random(MATRIX_SIZE);
+    
+    // Generate random target position (different from start)
+    do {
+        targetPos.x = random(MATRIX_SIZE);
+        targetPos.y = random(MATRIX_SIZE);
+    } while (targetPos.x == playerPos.x && targetPos.y == playerPos.y);
+    
+    playerVisible = true;
+    lastBlinkTime = millis();
+}
+
+bool LEDMatrix::isValidPosition(int x, int y) const {
+    return x >= 0 && x < MATRIX_SIZE && y >= 0 && y < MATRIX_SIZE;
+}
+
+void LEDMatrix::updateMazeDisplay() {
+    if (currentMode != MatrixMode::MAZE) return;
+    
+    // Handle player blinking
+    if (millis() - lastBlinkTime >= 500) { // Blink every 500ms
+        playerVisible = !playerVisible;
+        lastBlinkTime = millis();
+    }
+    
+    // Clear the display
+    clear();
+    
+    // Draw target (blue)
+    pixels.setPixelColor(getPixelIndex(targetPos.x, targetPos.y), pixels.Color(0, 0, 255));
+    
+    // Draw player (blinking green)
+    if (playerVisible) {
+        pixels.setPixelColor(getPixelIndex(playerPos.x, playerPos.y), pixels.Color(0, 255, 0));
+    }
+    
+    pixels.show();
+}
+
+bool LEDMatrix::movePlayer(MazeDirection direction) {
+    if (currentMode != MatrixMode::MAZE) return false;
+    
+    int newX = playerPos.x;
+    int newY = playerPos.y;
+    
+    switch (direction) {
+        case MazeDirection::UP:
+            newY--;
+            break;
+        case MazeDirection::DOWN:
+            newY++;
+            break;
+        case MazeDirection::LEFT:
+            newX--;
+            break;
+        case MazeDirection::RIGHT:
+            newX++;
+            break;
+    }
+    
+    if (!isValidPosition(newX, newY)) {
+        return false;
+    }
+    
+    playerPos.x = newX;
+    playerPos.y = newY;
+    playerVisible = true; // Make player visible immediately after move
+    lastBlinkTime = millis();
+    updateMazeDisplay();
+    
+    return true;
+}
+
+bool LEDMatrix::isMazeComplete() const {
+    return playerPos.x == targetPos.x && playerPos.y == targetPos.y;
 }

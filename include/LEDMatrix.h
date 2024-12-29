@@ -15,10 +15,23 @@ struct ChainPixel {
     bool active;
 };
 
+struct Point {
+    int x;
+    int y;
+};
+
 enum class MatrixMode {
     STARTUP,
     COLOR_CHAIN,
-    SIMON_SAYS
+    SIMON_SAYS,
+    MAZE
+};
+
+enum class MazeDirection {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
 };
 
 class LEDMatrix {
@@ -40,10 +53,14 @@ public:
     void setMode(MatrixMode newMode);
     String getMode() const;
     void initSimonSays();
+    void initMaze();
+    bool movePlayer(MazeDirection direction);
+    bool isMazeComplete() const;
 
 private:
     static const int DELAYVAL = 500;
     static const int NUM_PIXELS = 64;
+    static const int MATRIX_SIZE = 8;
     
     Adafruit_NeoPixel pixels;
     MatrixMode currentMode = MatrixMode::STARTUP;
@@ -71,6 +88,12 @@ private:
     // Simon Says state
     Color quadrantColors[4];
 
+    // Maze state
+    Point playerPos;
+    Point targetPos;
+    unsigned long lastBlinkTime = 0;
+    bool playerVisible = true;
+
     // Private methods
     int getPixelIndex(int x, int y);
     void updateStartupAnimation();
@@ -81,6 +104,9 @@ private:
     void displaySimonSaysPattern();
     void generateRandomQuadrantColors();
     void setQuadrantColor(int quadrant, const Color& color);
+    void updateMazeDisplay();
+    void generateMazePoints();
+    bool isValidPosition(int x, int y) const;
 };
 
 #endif
