@@ -2,7 +2,7 @@
 
 NotABomb is an interactive portable escape room challenge where participants must "diffuse" a device by solving various puzzles and challenges. The project combines hardware interaction with digital puzzles, creating an engaging and immersive experience.
 
-![ToDo App](https://github.com/com2u/daily-routine-schedule-app/blob/main/images/todo.png)
+![NotABomb](https://github.com/com2u/NotABomb/blob/main/images/NotABomb.jpg)
 
 ## Overview
 
