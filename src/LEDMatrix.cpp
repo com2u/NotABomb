@@ -68,8 +68,12 @@ void LEDMatrix::setMode(MatrixMode newMode) {
 }
 
 void LEDMatrix::initSimonSays() {
-    String colorcode = generateRandomQuadrantColors();
+    currentColorCode = generateRandomQuadrantColors();
     displaySimonSaysPattern();
+}
+
+String LEDMatrix::getCurrentColorCode() const {
+    return currentColorCode;
 }
 
 String LEDMatrix::generateRandomQuadrantColors() {
@@ -148,7 +152,7 @@ bool LEDMatrix::checkLEDChain(uint8_t r_ref, uint8_t g_ref, uint8_t b_ref) {
         uint8_t b = color & 0xFF;
         Serial.print((String) "#"+i+ "rgb"+r+","+g+","+b);
         // Check if pixel is blue (0,0,255)
-        if (r > r_ref && g > g_ref && b >= b_ref) {
+        if (r >= r_ref && g >= g_ref && b >= b_ref) {
             return true;
         }
     }

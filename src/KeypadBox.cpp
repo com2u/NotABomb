@@ -9,7 +9,8 @@ KeypadBox::KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& 
       blue(b),
       connection(conn),
       ledMatrix(matrix),
-      customKeypad(makeKeymap((char*)hexaKeys), rowPins, colPins, ROWS, COLS) {
+      customKeypad(makeKeymap((char*)hexaKeys), rowPins, colPins, ROWS, COLS),
+      enteredCode("") {  // Initialize enteredCode
     
     // Initialize the keypad matrix
     char tempKeys[ROWS][COLS] = {
@@ -39,7 +40,30 @@ void KeypadBox::handle() {
         tm1638.clearDisplay();   
         tm1638.setDisplayString(text);
         
-        if (ledMatrix.getMode() == "Maze") {
+        if (ledMatrix.getMode() == "SimonSays") {
+            // Only process numbers 1-4 for SimonSays
+            if (button >= '1' && button <= '4') {
+                enteredCode += button;
+                Serial.println((String) "SimonSays entered: " + enteredCode);
+                
+                // If we have 4 digits, check if it matches
+                if (enteredCode.length() == 4) {
+                    String colorCode = ledMatrix.getCurrentColorCode();
+                    Serial.println((String) "SimonSays comparing - Entered: " + enteredCode + " Expected: " + colorCode);
+                    
+                    // Compare codes
+                    if (enteredCode == colorCode) {
+                        if (connection && connection->getMQTTClient()) {
+                            connection->getMQTTClient()->publish("NotABomb/Challenge", "passed");
+                            Serial.println("SimonSays completed!");
+                        }
+                    }
+                    
+                    // Reset for next attempt
+                    resetEnteredCode();
+                }
+            }
+        } else if (ledMatrix.getMode() == "Maze") {
             bool moved = false;
             if (button == '2') { // Up
                 moved = ledMatrix.movePlayer(MazeDirection::UP);

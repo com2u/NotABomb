@@ -56,6 +56,7 @@ public:
     void initMaze();
     bool movePlayer(MazeDirection direction);
     bool isMazeComplete() const;
+    String getCurrentColorCode() const; // New method to get current color code
 
 private:
     static const int DELAYVAL = 500;
@@ -87,6 +88,7 @@ private:
 
     // Simon Says state
     Color quadrantColors[4];
+    String currentColorCode; // Store current color code
 
     // Maze state
     Point playerPos;

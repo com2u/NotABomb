@@ -23,6 +23,9 @@ private:
     int& blue;
     Connection* connection;
     LEDMatrix& ledMatrix;
+    String enteredCode;  // Store entered code for SimonSays mode
+
+    void resetEnteredCode() { enteredCode = ""; }  // Reset entered code
 
 public:
     KeypadBox(TM1638Box& tm, Adafruit_NeoPixel& px, int& r, int& g, int& b, Connection* conn, LEDMatrix& matrix);
