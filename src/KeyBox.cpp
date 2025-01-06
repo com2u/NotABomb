@@ -85,9 +85,13 @@ void KeyBox::handle() {
             
             // Send appropriate MQTT message
             if (connection->getLEDMatrix().checkLEDChain(0, 0, 32)) {
-                connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Passed");
+                //connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Passed");
+                connection->getMQTTClient()->publish("NotABomb/Challenge", "passed");
+                Serial.println((String) "NotABomb/Challenge"+ "passed"); 
             } else {
-                connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Failed");
+                //connection->getMQTTClient()->publish("NotABomb/CYD/LEDChain", "Failed");
+                connection->getMQTTClient()->publish("NotABomb/Challenge", "failed");
+                Serial.println((String) "NotABomb/Challenge"+ "failed"); 
             }
             connection->getMQTTClient()->flush();
         }
@@ -99,6 +103,8 @@ void KeyBox::handle() {
             connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "SimonSays");
         } else if (connection->getLEDMatrix().getMode() == "SimonSays") {
             connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "Maze");
+        } else if (connection->getLEDMatrix().getMode() == "Maze") {
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "ColorChain");
         }
         delay(60); // debounce
     }

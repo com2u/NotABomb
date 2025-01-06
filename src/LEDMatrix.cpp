@@ -68,11 +68,11 @@ void LEDMatrix::setMode(MatrixMode newMode) {
 }
 
 void LEDMatrix::initSimonSays() {
-    generateRandomQuadrantColors();
+    String colorcode = generateRandomQuadrantColors();
     displaySimonSaysPattern();
 }
 
-void LEDMatrix::generateRandomQuadrantColors() {
+String LEDMatrix::generateRandomQuadrantColors() {
     // Define the four possible colors
     const Color colors[] = {
         {255, 0, 0},    // Red
@@ -83,7 +83,7 @@ void LEDMatrix::generateRandomQuadrantColors() {
     
     // Create a temporary array to track used colors
     bool usedColors[4] = {false, false, false, false};
-    int colorcode = 0;
+    String colorcode = "";
     // Assign random unique colors to each quadrant
     for (int i = 0; i < 4; i++) {
         int colorIndex;
@@ -91,11 +91,12 @@ void LEDMatrix::generateRandomQuadrantColors() {
             colorIndex = random(4);
         } while (usedColors[colorIndex]);
         Serial.println((String) "SinonSays Color:"+colorIndex); 
-        colorcode = colorcode * 2 + colorIndex;
+        colorcode = String(colorcode + char(49+colorIndex));
         Serial.println((String) "SinonSays code:"+colorcode); 
         usedColors[colorIndex] = true;
         quadrantColors[i] = colors[colorIndex];
     }
+    return colorcode;
 }
 
 void LEDMatrix::setQuadrantColor(int quadrant, const Color& color) {

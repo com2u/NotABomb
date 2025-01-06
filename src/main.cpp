@@ -45,7 +45,7 @@ void setup() {
     tm1638.begin();
     tm1638.startCountdown(1, 0, 0);
 
-    keypad = new KeypadBox(tm1638, ledMatrix.getPixels(), ledRed, ledGreen, ledBlue, connection);
+    keypad = new KeypadBox(tm1638, ledMatrix.getPixels(), ledRed, ledGreen, ledBlue, connection, ledMatrix);
     keybox = new KeyBox(connection);
     keybox->init();
 

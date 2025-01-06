@@ -166,35 +166,16 @@ void Connection::callback(char* topic, byte* payload, unsigned int length) {
     Serial.println();
 
     // Check if this is a mode change message
-    if (String(topic) == "NotABomb/CYD/Mode") {
-        if (message == "SimonSays") {
+    if (String(topic) == "NotABomb/CYD/Mod") {
+        if (message == "SimonSay") {
             ledMatrix.setMode(MatrixMode::SIMON_SAYS);
             Serial.println("Switching to Simon Says mode");
-        } else if (message == "ColorChain") {
+        } else if (message == "ColorChai") {
             ledMatrix.setMode(MatrixMode::COLOR_CHAIN);
             Serial.println("Switching to Color Chain mode");
-        } else if (message == "Maze") {
+        } else if (message == "Maz") {
             ledMatrix.setMode(MatrixMode::MAZE);
             Serial.println("Switching to Maze mode");
-        }
-    }
-    // Check if this is a keypad input for maze mode
-    else if (String(topic) == "NotABomb/Key/Keypad" && ledMatrix.getMode() == "Maze") {
-        bool moved = false;
-        if (message == "2") { // Up
-            moved = ledMatrix.movePlayer(MazeDirection::UP);
-        } else if (message == "8") { // Down
-            moved = ledMatrix.movePlayer(MazeDirection::DOWN);
-        } else if (message == "4") { // Left
-            moved = ledMatrix.movePlayer(MazeDirection::LEFT);
-        } else if (message == "6") { // Right
-            moved = ledMatrix.movePlayer(MazeDirection::RIGHT);
-        }
-        
-        // Check if move was successful and if maze is complete
-        if (moved && ledMatrix.isMazeComplete()) {
-            client.publish("NotABomb/CYD/Maze", "done");
-            Serial.println("Maze completed!");
         }
     }
 

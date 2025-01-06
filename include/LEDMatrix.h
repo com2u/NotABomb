@@ -102,7 +102,7 @@ private:
     void updateColorChain();
     void updatePixelFromChain(int index);
     void displaySimonSaysPattern();
-    void generateRandomQuadrantColors();
+    String generateRandomQuadrantColors();
     void setQuadrantColor(int quadrant, const Color& color);
     void updateMazeDisplay();
     void generateMazePoints();
