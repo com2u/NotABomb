@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 // Define the WiFi networks
-const char* ssid[] =     { "38C3-open", "Com2u.de.WLAN2","Com2u.de.WLAN","Com2uRedmi11","KPMS-Openhouse", "Vodafone-BE2C",  "RobsTest","HessCom2u", "HHLink","muccc.legacy-2.4GHz", "muenchen.freifunk.net",  "Cafeteria","Free_WIFI","WLANESP","muenchen.freifunk.net/muc_cty" ,"KPMS-Openhouse","KPMS-Cafeteria"};
-const char* password[] = { "", "SOMMERREGEN05","SOMMERREGEN05", "SOMMERREGEN05", "OpenHouse", "q49adKnc4bPka7bp", "Schiller12","SOMMERREGEN05",  "SOMMERREGEN05","haileris"  , ""               ,  "Cafeteria","",       "Schiller", "","OpenHouse", "KPMS-Cafeteria-2022"};
+const char* ssid[] =     { "muenchen.freifunk.net/muc_cty", "Com2u.de.WLAN2","Com2u.de.WLAN","Com2uRedmi11"  ,"KPMS-Openhouse", "Vodafone-BE2C",  "RobsTest",  "HessCom2u",      "HHLink",        "muccc", "muenchen.freifunk.net",  "Cafeteria","Free_WIFI","WLANESP","muenchen.freifunk.net/muc_cty" ,"KPMS-Openhouse","KPMS-Cafeteria"};
+const char* password[] = { "",  "SOMMERREGEN05","SOMMERREGEN05", "SOMMERREGEN05", "OpenHouse",    "q49adKnc4bPka7bp", "Schiller12","SOMMERREGEN05",  "SOMMERREGEN05","haileris"  , ""               ,  "Cafeteria","",       "Schiller", "","OpenHouse", "KPMS-Cafeteria-2022"};
 
 Connection* Connection::instance = nullptr;
 
@@ -166,19 +166,19 @@ void Connection::callback(char* topic, byte* payload, unsigned int length) {
     Serial.println();
 
     // Check if this is a mode change message
-    if (String(topic) == "NotABomb/CYD/Mod") {
-        if (message == "SimonSay") {
+    if (String(topic).indexOf("NotABomb/CYD/Mode") != -1) {
+        if (message.indexOf("SimonSay") != -1) {
             ledMatrix.setMode(MatrixMode::SIMON_SAYS);
             Serial.println("Switching to Simon Says mode");
-        } else if (message == "ColorChai") {
+        } else if (message.indexOf("ColorChai") != -1) {
             ledMatrix.setMode(MatrixMode::COLOR_CHAIN);
             Serial.println("Switching to Color Chain mode");
-        } else if (message == "Maz") {
+        } else if (message.indexOf("Maz") != -1) {
             ledMatrix.setMode(MatrixMode::MAZE);
             Serial.println("Switching to Maze mode");
         }
     }
-
+    delay(500);
     // Set LED color when message received (keep existing functionality)
     pixels.setPixelColor(1, pixels.Color(255, 0, 0));
     pixels.show();

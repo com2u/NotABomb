@@ -94,17 +94,19 @@ void KeyBox::handle() {
                 Serial.println((String) "NotABomb/Challenge"+ "failed"); 
             }
             connection->getMQTTClient()->flush();
+            delay(500);
         }
     }
     if(Key_White2 != digitalRead(Key_White2_PIN)){
         Key_White2 = digitalRead(Key_White2_PIN);
         Serial.println((String) "Key_White2:"+Key_White2); 
+        Serial.println((String) "NaB Mode:"+connection->getLEDMatrix().getMode()); 
         if (connection->getLEDMatrix().getMode() == "ColorChain") {
-            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "SimonSays");
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "SimonSays ");
         } else if (connection->getLEDMatrix().getMode() == "SimonSays") {
-            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "Maze");
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "Maze ");
         } else if (connection->getLEDMatrix().getMode() == "Maze") {
-            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "ColorChain");
+            connection->getMQTTClient()->publish("NotABomb/CYD/Mode", "ColorChain ");
         }
         delay(60); // debounce
     }
