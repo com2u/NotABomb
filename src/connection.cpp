@@ -1,10 +1,6 @@
 #include "connection.h"
 #include <Arduino.h>
 
-// Define the WiFi networks
-const char* ssid[] =     { "muenchen.freifunk.net/muc_cty", "Com2u.de.WLAN2","Com2u.de.WLAN","Com2uRedmi11"  ,"KPMS-Openhouse", "Vodafone-BE2C",  "RobsTest",  "HessCom2u",      "HHLink",        "muccc", "muenchen.freifunk.net",  "Cafeteria","Free_WIFI","WLANESP","muenchen.freifunk.net/muc_cty" ,"KPMS-Openhouse","KPMS-Cafeteria"};
-const char* password[] = { "",  "SOMMERREGEN05","SOMMERREGEN05", "SOMMERREGEN05", "OpenHouse",    "q49adKnc4bPka7bp", "Schiller12","SOMMERREGEN05",  "SOMMERREGEN05","haileris"  , ""               ,  "Cafeteria","",       "Schiller", "","OpenHouse", "KPMS-Cafeteria-2022"};
-
 Connection* Connection::instance = nullptr;
 
 Connection::Connection(Adafruit_NeoPixel& px, LEDMatrix& matrix) 
@@ -16,7 +12,7 @@ Connection::Connection(Adafruit_NeoPixel& px, LEDMatrix& matrix)
 
 void Connection::begin() {
     setupWiFi();
-    client.setServer(mqttserver, mqtt_port);
+    client.setServer(mqtt_server.c_str(), mqttPort);
     client.setCallback(staticCallback);
     
     if (!client.connected()) {
@@ -24,15 +20,7 @@ void Connection::begin() {
     }
 }
 
-String getFingerprint(const uint8_t* mac){
-  String result;
-  for (int i = 4; i < 6; ++i) {
-    result += String(mac[i], 16);
-  }
-  return result;
-}
-
-boolean connectWIFI(const char* wifi_ssid, const char* password, int retries ){
+boolean Connection::connectWIFI(const char* wifi_ssid, const char* password, int retries ){
   Serial.print("Connecting ");
   Serial.println(wifi_ssid);
   delay(100);
@@ -40,7 +28,11 @@ boolean connectWIFI(const char* wifi_ssid, const char* password, int retries ){
   String clientName =  "NotABomb";
   uint8_t mac[6];
   WiFi.macAddress(mac);
-  clientName += getFingerprint(mac);
+  String result;
+  for (int i = 4; i < 6; ++i) {
+    result += String(mac[i], 16);
+  }
+  clientName += result;
   char host[clientName.length() + 1];
   clientName.toCharArray(host, clientName.length() + 1);
   for (int retry = 0; retry < retries; retry++) {
@@ -62,7 +54,7 @@ boolean connectWIFI(const char* wifi_ssid, const char* password, int retries ){
   return false;
 }
 
-void scanWIFINetwork() {
+void Connection::scanWIFINetwork() {
   Serial.println((String) "WIFI scan start "+millis());
 
   // WiFi.scanNetworks will return the number of networks found
@@ -81,10 +73,8 @@ void scanWIFINetwork() {
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
-      int ssidSize = 0;
       int networkNo = 0;
-      while (ssidSize < sizeof(ssid) ) {
-        ssidSize += sizeof(ssid[networkNo]);
+      while (networkNo < NUM_NETWORKS) {
         if (WiFi.SSID(i) == ssid[networkNo]){
             Serial.print(" Home Network found: ");
             if (connectWIFI(ssid[networkNo], password[networkNo], 10)){
@@ -106,12 +96,11 @@ void scanWIFINetwork() {
 void Connection::setupWiFi() {
   //connect to WiFi
   int networkNo = 0;
-  int ssidSize = 0;
   int retries = 12;
   //attempt to connect to the wifi if connection is lost
   if (WiFi.status() != WL_CONNECTED) {
     // Try several WIFI Networks
-    while (networkNo < sizeof(ssid)/sizeof(ssid[0])) {
+    while (networkNo < NUM_NETWORKS) {
       if (connectWIFI(ssid[networkNo], password[networkNo], retries)){
         break;
       }
@@ -129,7 +118,7 @@ void Connection::reconnectMQTT() {
         clientId += String(random(0xffff), HEX);
         
         // Attempt to connect
-        if (client.connect(clientId.c_str(), mqtt_user, mqtt_password)) {
+        if (client.connect(clientId.c_str(), MQTTUser.c_str(), MQTTPassword.c_str())) {
             Serial.println("connected");
             // Once connected, publish an announcement...
             client.publish("NotABomb/Key/init", "Startup");
